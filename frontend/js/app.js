@@ -4,6 +4,7 @@
   let currentDataURL = null;
   let mediaStream = null;
   let currentLuckyNumber = 7;
+  let lastResultData = null;
 
   // ===== DOM References =====
   const views = {
@@ -35,6 +36,8 @@
   const luckyItemsEl = document.getElementById('luckyItems');
   const lottoBtn = document.getElementById('lottoBtn');
   const lottoBalls = document.getElementById('lottoBalls');
+  const saveBtn = document.getElementById('saveBtn');
+  const shareBtn = document.getElementById('shareBtn');
 
   // ===== Stars Canvas =====
   function initStars() {
@@ -241,6 +244,7 @@
 
   // ===== Results Rendering =====
   function renderResults(data) {
+    lastResultData = data;
     overallText.textContent = data.overall || '';
     fortuneText.textContent = data.fortune || '';
 
@@ -299,6 +303,274 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
   }
+
+  // ===== Share / Save =====
+  function drawRoundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+    ctx.lineTo(x + r, y + h);
+    ctx.arcTo(x, y + h, x, y + h - r, r);
+    ctx.lineTo(x, y + r);
+    ctx.arcTo(x, y, x + r, y, r);
+    ctx.closePath();
+  }
+
+  function wrapText(ctx, text, maxWidth) {
+    const chars = [...(text || '')];
+    const lines = [];
+    let line = '';
+    for (const ch of chars) {
+      const test = line + ch;
+      if (ctx.measureText(test).width > maxWidth && line.length > 0) {
+        lines.push(line);
+        line = ch;
+      } else {
+        line = test;
+      }
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  async function buildShareCanvas(data) {
+    await document.fonts.ready;
+
+    const W = 750;
+    const P = 44;
+    const tmp = document.createElement('canvas');
+    tmp.width = W;
+    tmp.height = 1;
+    const tmpCtx = tmp.getContext('2d');
+
+    const OVERALL_FONT = '27px "Noto Serif KR", serif';
+    const FORTUNE_FONT = '25px "Noto Serif KR", serif';
+    tmpCtx.font = OVERALL_FONT;
+    const overallLines = wrapText(tmpCtx, data.overall, W - P * 2);
+    tmpCtx.font = FORTUNE_FONT;
+    const fortuneLines = wrapText(tmpCtx, data.fortune, W - P * 2);
+    const lineValues = Object.values(data.lines || {});
+
+    const H =
+      P + 88 + 52 + 40 + 28 +         // header: emoji, title, tagline, sep
+      overallLines.length * 38 + 8 + 28 + // overall + sep
+      lineValues.length * 58 + 4 + 28 +   // lines + sep
+      42 + fortuneLines.length * 36 + 8 + 28 + // fortune + sep
+      44 + 3 * 44 +                        // lucky items
+      P;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    // Background
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, '#1a0a2e');
+    bg.addColorStop(1, '#0a0418');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Stars
+    ctx.save();
+    let seed = 42;
+    const rng = () => {
+      seed = (seed * 1664525 + 1013904223) & 0xffffffff;
+      return (seed >>> 0) / 0xffffffff;
+    };
+    for (let i = 0; i < 80; i++) {
+      const alpha = rng() * 0.5 + 0.2;
+      ctx.fillStyle = `rgba(232,213,255,${alpha.toFixed(2)})`;
+      ctx.beginPath();
+      ctx.arc(rng() * W, rng() * H, rng() * 1.8 + 0.3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    let y = P;
+
+    const sep = () => {
+      ctx.strokeStyle = 'rgba(176,106,255,0.25)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(P, y);
+      ctx.lineTo(W - P, y);
+      ctx.stroke();
+      y += 28;
+    };
+
+    // Header
+    ctx.font = '68px serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#fff';
+    ctx.fillText('🔮', W / 2, y + 68);
+    y += 88;
+
+    ctx.font = 'bold 46px "Noto Serif KR", serif';
+    ctx.fillStyle = '#e8d5ff';
+    ctx.fillText('운명의 손금', W / 2, y);
+    y += 52;
+
+    ctx.font = '23px "Noto Sans KR", sans-serif';
+    ctx.fillStyle = 'rgba(176,106,255,0.7)';
+    ctx.fillText('palm-reading.pages.dev', W / 2, y);
+    y += 40;
+    sep();
+
+    // Overall
+    ctx.font = OVERALL_FONT;
+    ctx.fillStyle = 'rgba(232,213,255,0.88)';
+    ctx.textAlign = 'left';
+    for (const line of overallLines.slice(0, 4)) {
+      ctx.fillText(line, P, y);
+      y += 38;
+    }
+    y += 8;
+    sep();
+
+    // Lines
+    for (const line of lineValues) {
+      const score = Number(line.score) || 0;
+
+      ctx.font = '28px serif';
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#fff';
+      ctx.fillText(line.emoji || '', P, y + 22);
+
+      ctx.font = 'bold 26px "Noto Sans KR", sans-serif';
+      ctx.fillStyle = '#e8d5ff';
+      ctx.fillText(line.name || '', P + 42, y + 22);
+
+      ctx.font = 'bold 26px "Noto Sans KR", sans-serif';
+      ctx.fillStyle = '#c08aff';
+      ctx.textAlign = 'right';
+      ctx.fillText(`${score}/10`, W - P, y + 22);
+      y += 30;
+
+      const bx = P, bw = W - P * 2, bh = 10;
+      ctx.fillStyle = 'rgba(176,106,255,0.15)';
+      drawRoundRect(ctx, bx, y, bw, bh, 5);
+      ctx.fill();
+
+      if (score > 0) {
+        const sw = bw * (score / 10);
+        const g = ctx.createLinearGradient(bx, 0, bx + sw, 0);
+        g.addColorStop(0, '#8040cc');
+        g.addColorStop(1, '#ff80c0');
+        ctx.fillStyle = g;
+        drawRoundRect(ctx, bx, y, sw, bh, 5);
+        ctx.fill();
+      }
+      y += 20;
+    }
+    y += 4;
+    sep();
+
+    // Fortune
+    ctx.font = 'bold 28px "Noto Sans KR", sans-serif';
+    ctx.fillStyle = '#ffd700';
+    ctx.textAlign = 'left';
+    ctx.fillText('🌟 이번 달 운세', P, y);
+    y += 42;
+
+    ctx.font = FORTUNE_FONT;
+    ctx.fillStyle = 'rgba(232,213,255,0.88)';
+    for (const line of fortuneLines.slice(0, 3)) {
+      ctx.fillText(line, P, y);
+      y += 36;
+    }
+    y += 8;
+    sep();
+
+    // Lucky items
+    ctx.font = 'bold 28px "Noto Sans KR", sans-serif';
+    ctx.fillStyle = '#7cfc00';
+    ctx.textAlign = 'left';
+    ctx.fillText('🍀 행운의 아이템', P, y);
+    y += 44;
+
+    const lucky = data.luckyItems || {};
+    for (const [label, value] of [
+      ['색상', String(lucky.color || '-')],
+      ['숫자', String(lucky.number || '-')],
+      ['방향', String(lucky.direction || '-')],
+    ]) {
+      ctx.font = '26px "Noto Sans KR", sans-serif';
+      ctx.fillStyle = 'rgba(176,106,255,0.7)';
+      ctx.textAlign = 'left';
+      ctx.fillText(label, P, y);
+      const lw = ctx.measureText(label).width;
+      ctx.fillStyle = '#e8d5ff';
+      ctx.fillText(value, P + lw + 20, y);
+      y += 44;
+    }
+
+    return canvas;
+  }
+
+  saveBtn.addEventListener('click', async () => {
+    if (!lastResultData || saveBtn.disabled) return;
+    saveBtn.disabled = true;
+    const orig = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<span class="btn-icon">⏳</span> 생성 중...';
+    try {
+      const canvas = await buildShareCanvas(lastResultData);
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '운명의손금.png';
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+      }, 'image/png');
+    } catch {
+      alert('이미지 저장 중 오류가 발생했습니다.');
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = orig;
+    }
+  });
+
+  shareBtn.addEventListener('click', async () => {
+    if (!lastResultData || shareBtn.disabled) return;
+    shareBtn.disabled = true;
+    const orig = shareBtn.innerHTML;
+    shareBtn.innerHTML = '<span class="btn-icon">⏳</span> 생성 중...';
+    try {
+      const canvas = await buildShareCanvas(lastResultData);
+      const blob = await new Promise((res) => canvas.toBlob(res, 'image/png'));
+      const file = new File([blob], '운명의손금.png', { type: 'image/png' });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: '운명의 손금 결과',
+          text: '🔮 손금으로 알아보는 나의 운명',
+        });
+      } else if (navigator.share) {
+        await navigator.share({
+          title: '운명의 손금 결과',
+          text: '🔮 손금으로 알아보는 나의 운명',
+          url: 'https://palm-reading.pages.dev',
+        });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '운명의손금.png';
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') alert('공유 중 오류가 발생했습니다.');
+    } finally {
+      shareBtn.disabled = false;
+      shareBtn.innerHTML = orig;
+    }
+  });
 
   // ===== Lotto =====
   function generateLottoNumbers(luckyNum) {
