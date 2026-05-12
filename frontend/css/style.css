@@ -1064,6 +1064,54 @@ h1 {
   padding-bottom: 8px;
 }
 
+.copy-link-section {
+  padding: 24px 0 8px;
+  text-align: center;
+}
+
+.btn-copy-link {
+  background: transparent;
+  border: 1px solid rgba(176, 106, 255, 0.4);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  padding: 10px 20px;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-copy-link:hover {
+  border-color: rgba(176, 106, 255, 0.8);
+  color: var(--text-primary);
+  background: rgba(176, 106, 255, 0.08);
+}
+
+.copy-toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(40, 20, 60, 0.95);
+  border: 1px solid rgba(176, 106, 255, 0.4);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  padding: 10px 20px;
+  border-radius: 24px;
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
+  z-index: 9999;
+  white-space: nowrap;
+}
+
+.copy-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 /* ===== Scrollbar ===== */
 .view::-webkit-scrollbar {
   width: 4px;

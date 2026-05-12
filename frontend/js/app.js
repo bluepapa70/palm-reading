@@ -348,18 +348,28 @@
 
     const OVERALL_FONT = '27px "Noto Serif KR", serif';
     const FORTUNE_FONT = '25px "Noto Serif KR", serif';
+    const INTERP_FONT = '22px "Noto Sans KR", sans-serif';
     tmpCtx.font = OVERALL_FONT;
     const overallLines = wrapText(tmpCtx, data.overall, W - P * 2);
     tmpCtx.font = FORTUNE_FONT;
     const fortuneLines = wrapText(tmpCtx, data.fortune, W - P * 2);
-    const lineValues = Object.values(data.lines || {});
+    tmpCtx.font = INTERP_FONT;
+    const lineValues = Object.values(data.lines || {}).map((line) => ({
+      ...line,
+      interpLines: wrapText(tmpCtx, line.interpretation || '', W - P * 2).slice(0, 3),
+    }));
+
+    const lineBlockH = lineValues.reduce(
+      (sum, line) => sum + 30 + 20 + line.interpLines.length * 28 + 14,
+      0
+    );
 
     const H =
-      P + 88 + 52 + 40 + 28 +         // header: emoji, title, tagline, sep
-      overallLines.length * 38 + 8 + 28 + // overall + sep
-      lineValues.length * 58 + 4 + 28 +   // lines + sep
+      P + 88 + 52 + 40 + 28 +              // header: emoji, title, tagline, sep
+      overallLines.length * 38 + 8 + 28 +  // overall + sep
+      lineBlockH + 4 + 28 +                // lines + sep
       42 + fortuneLines.length * 36 + 8 + 28 + // fortune + sep
-      44 + 3 * 44 +                        // lucky items
+      44 + 3 * 44 +                         // lucky items
       P;
 
     const canvas = document.createElement('canvas');
@@ -464,7 +474,16 @@
         drawRoundRect(ctx, bx, y, sw, bh, 5);
         ctx.fill();
       }
-      y += 20;
+      y += 18;
+
+      ctx.font = INTERP_FONT;
+      ctx.fillStyle = 'rgba(200,180,240,0.78)';
+      ctx.textAlign = 'left';
+      for (const iLine of line.interpLines) {
+        ctx.fillText(iLine, P, y);
+        y += 28;
+      }
+      y += 14;
     }
     y += 4;
     sep();
@@ -547,13 +566,11 @@
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: '운명의 손금 결과',
-          text: '🔮 손금으로 알아보는 나의 운명',
+          title: '손금으로 알아보는 나의 운명',
         });
       } else if (navigator.share) {
         await navigator.share({
-          title: '운명의 손금 결과',
-          text: '🔮 손금으로 알아보는 나의 운명',
+          title: '손금으로 알아보는 나의 운명',
           url: 'https://palm-reading.pages.dev',
         });
       } else {
@@ -658,6 +675,33 @@
     lottoBalls.innerHTML = '';
     analyzeBtn.disabled = false;
     showView('upload');
+  });
+
+  // ===== Copy Homepage Link =====
+  const copyLinkBtn = document.getElementById('copyLinkBtn');
+  const copyToast = document.createElement('div');
+  copyToast.className = 'copy-toast';
+  copyToast.textContent = '🔗 링크가 복사되었습니다!';
+  document.body.appendChild(copyToast);
+
+  let toastTimer = null;
+  copyLinkBtn.addEventListener('click', async () => {
+    const url = 'https://palm-reading.pages.dev/';
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = url;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    copyToast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => copyToast.classList.remove('show'), 2000);
   });
 
   // ===== Init =====
