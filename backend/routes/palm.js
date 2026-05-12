@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ const upload = multer({
   },
 });
 
-const PALM_READING_PROMPT = `당신은 수십 년의 경험을 가진 전문 손금 전문가입니다.
+const PALM_READING_SYSTEM_PROMPT = `당신은 수십 년의 경험을 가진 전문 손금 전문가입니다.
 제공된 손바닥 이미지를 보고 한국 전통 손금 해석법에 따라 상세하게 분석해 주세요.
 
 반드시 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 포함하지 마세요.
@@ -74,34 +74,50 @@ router.post('/', upload.single('palmImage'), async (req, res) => {
     return res.status(400).json({ success: false, error: '이미지를 업로드해 주세요.' });
   }
 
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
   try {
     const base64 = req.file.buffer.toString('base64');
     const mimeType = req.file.mimetype;
 
-    const response = await client.chat.completions.create({
-      model: 'gpt-4o',
-      response_format: { type: 'json_object' },
+    const response = await client.messages.create({
+      model: 'claude-opus-4-7',
+      max_tokens: 8192,
+      thinking: { type: 'adaptive' },
+      system: [
+        {
+          type: 'text',
+          text: PALM_READING_SYSTEM_PROMPT,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
       messages: [
         {
           role: 'user',
           content: [
             {
-              type: 'image_url',
-              image_url: {
-                url: `data:${mimeType};base64,${base64}`,
-                detail: 'high',
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: mimeType,
+                data: base64,
               },
             },
-            { type: 'text', text: PALM_READING_PROMPT },
+            {
+              type: 'text',
+              text: '이 손바닥 이미지를 분석해 주세요.',
+            },
           ],
         },
       ],
-      max_tokens: 2000,
     });
 
-    const content = JSON.parse(response.choices[0].message.content);
+    const textBlock = response.content.find((b) => b.type === 'text');
+    if (!textBlock) {
+      return res.status(500).json({ success: false, error: '분석 결과를 처리하는 중 오류가 발생했습니다. 다시 시도해 주세요.' });
+    }
+
+    const content = JSON.parse(textBlock.text);
 
     if (content.error) {
       return res.status(400).json({ success: false, error: content.error });
@@ -114,10 +130,10 @@ router.post('/', upload.single('palmImage'), async (req, res) => {
     return res.json({ success: true, data: content });
   } catch (err) {
     console.error('Palm analysis error:', err);
-    if (err?.status === 429 || err?.code === 'insufficient_quota') {
+    if (err instanceof Anthropic.RateLimitError) {
       return res.status(503).json({ success: false, error: 'AI 분석 서비스 이용 한도에 도달했습니다. 잠시 후 다시 시도해 주세요.' });
     }
-    if (err?.status === 401) {
+    if (err instanceof Anthropic.AuthenticationError) {
       return res.status(503).json({ success: false, error: 'AI 서비스 인증에 실패했습니다. 관리자에게 문의해 주세요.' });
     }
     return res.status(500).json({ success: false, error: '분석 중 오류가 발생했습니다. 다시 시도해 주세요.' });
