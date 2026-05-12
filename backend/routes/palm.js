@@ -114,6 +114,12 @@ router.post('/', upload.single('palmImage'), async (req, res) => {
     return res.json({ success: true, data: content });
   } catch (err) {
     console.error('Palm analysis error:', err);
+    if (err?.status === 429 || err?.code === 'insufficient_quota') {
+      return res.status(503).json({ success: false, error: 'AI 분석 서비스 이용 한도에 도달했습니다. 잠시 후 다시 시도해 주세요.' });
+    }
+    if (err?.status === 401) {
+      return res.status(503).json({ success: false, error: 'AI 서비스 인증에 실패했습니다. 관리자에게 문의해 주세요.' });
+    }
     return res.status(500).json({ success: false, error: '분석 중 오류가 발생했습니다. 다시 시도해 주세요.' });
   }
 });
