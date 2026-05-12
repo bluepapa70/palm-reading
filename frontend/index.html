@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>손금 풀이 - 당신의 운명을 읽다</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;700&family=Noto+Sans+KR:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <canvas id="starsCanvas"></canvas>
+
+  <!-- 뷰 1: 업로드 -->
+  <section id="view-upload" class="view active">
+    <div class="view-inner">
+      <header class="site-header">
+        <div class="crystal-icon">🔮</div>
+        <h1>손금 풀이</h1>
+        <p class="subtitle">당신의 손 안에 숨겨진 운명을 읽어드립니다</p>
+      </header>
+
+      <main class="upload-main">
+        <div id="dropZone" class="drop-zone" role="button" tabindex="0" aria-label="손바닥 사진 업로드">
+          <input type="file" id="fileInput" accept="image/*" hidden>
+          <div class="drop-content">
+            <span class="drop-icon">🖐️</span>
+            <p class="drop-title">손바닥 사진을 여기에 드래그하거나</p>
+            <p class="drop-sub">아래 버튼을 눌러 업로드하세요</p>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button id="uploadBtn" class="btn btn-primary">
+            <span class="btn-icon">📁</span> 사진 업로드
+          </button>
+          <button id="cameraBtn" class="btn btn-secondary">
+            <span class="btn-icon">📷</span> 카메라 촬영
+          </button>
+        </div>
+
+        <p class="upload-hint">선명한 손바닥 사진일수록 더 정확한 결과를 얻을 수 있어요</p>
+      </main>
+    </div>
+  </section>
+
+  <!-- 뷰 2: 미리보기 -->
+  <section id="view-preview" class="view">
+    <div class="view-inner">
+      <h2 class="view-title">손바닥 사진 확인</h2>
+      <div class="image-frame">
+        <img id="previewImage" src="" alt="손바닥 미리보기">
+        <div class="image-frame-glow"></div>
+      </div>
+      <p class="preview-hint">사진이 선명하게 보이면 분석을 시작하세요</p>
+      <div class="button-group">
+        <button id="analyzeBtn" class="btn btn-primary btn-glow">
+          <span class="btn-icon">✨</span> 분석하기
+        </button>
+        <button id="retakeBtn" class="btn btn-ghost">다시 선택</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 뷰 3: 로딩 -->
+  <section id="view-loading" class="view">
+    <div class="view-inner loading-inner">
+      <div class="crystal-orb">
+        <div class="orb-shine"></div>
+      </div>
+      <p class="loading-text">손금을 분석하고 있습니다</p>
+      <p class="loading-subtext">당신의 운명을 읽는 중...</p>
+      <div class="loading-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 뷰 4: 결과 -->
+  <section id="view-results" class="view">
+    <div class="view-inner results-inner">
+      <header class="results-header">
+        <div class="crystal-icon">🔮</div>
+        <h2>손금 풀이 결과</h2>
+      </header>
+
+      <div class="overall-card card">
+        <h3 class="card-title">✨ 종합 해석</h3>
+        <p id="overallText" class="overall-text"></p>
+      </div>
+
+      <div id="linesContainer" class="lines-container"></div>
+
+      <div class="fortune-card card">
+        <h3 class="card-title">🌟 이번 달 운세</h3>
+        <p id="fortuneText" class="fortune-text"></p>
+      </div>
+
+      <div class="lucky-card card">
+        <h3 class="card-title">🍀 행운의 아이템</h3>
+        <div id="luckyItems" class="lucky-grid"></div>
+      </div>
+
+      <button id="restartBtn" class="btn btn-primary btn-full">
+        <span class="btn-icon">🔄</span> 다시 분석하기
+      </button>
+    </div>
+  </section>
+
+  <!-- 카메라 모달 -->
+  <div id="cameraModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="카메라 촬영">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <h3 class="modal-title">손바닥을 화면에 맞춰주세요</h3>
+      <div class="video-wrapper">
+        <video id="videoFeed" autoplay playsinline muted></video>
+        <div class="video-guide">
+          <div class="guide-hand">🖐️</div>
+          <p>손바닥을 이 영역에 맞춰주세요</p>
+        </div>
+      </div>
+      <canvas id="captureCanvas" hidden></canvas>
+      <div class="camera-controls">
+        <button id="captureBtn" class="btn btn-capture" aria-label="촬영">📷</button>
+        <button id="closeCameraBtn" class="btn btn-ghost">취소</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
