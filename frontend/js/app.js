@@ -82,6 +82,7 @@
     }
     if (id === 'results') {
       views.results.scrollTop = 0;
+      renderReactions();
     }
   }
 
@@ -286,6 +287,55 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
   }
+
+  // ===== Reactions =====
+  const REACTION_KEY = 'palmReactions';
+
+  function loadReactions() {
+    try {
+      return JSON.parse(localStorage.getItem(REACTION_KEY)) || { counts: {}, selected: null };
+    } catch {
+      return { counts: {}, selected: null };
+    }
+  }
+
+  function saveReactions(state) {
+    localStorage.setItem(REACTION_KEY, JSON.stringify(state));
+  }
+
+  function renderReactions() {
+    const state = loadReactions();
+    document.querySelectorAll('.reaction-btn').forEach((btn) => {
+      const type = btn.dataset.type;
+      const count = state.counts[type] || 0;
+      btn.querySelector('.reaction-count').textContent = count;
+      btn.classList.toggle('selected', state.selected === type);
+    });
+  }
+
+  document.querySelectorAll('.reaction-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const type = btn.dataset.type;
+      const state = loadReactions();
+
+      if (state.selected === type) {
+        state.counts[type] = Math.max((state.counts[type] || 1) - 1, 0);
+        state.selected = null;
+      } else {
+        if (state.selected) {
+          state.counts[state.selected] = Math.max((state.counts[state.selected] || 1) - 1, 0);
+        }
+        state.counts[type] = (state.counts[type] || 0) + 1;
+        state.selected = type;
+      }
+
+      saveReactions(state);
+      renderReactions();
+
+      btn.classList.add('pop');
+      btn.addEventListener('animationend', () => btn.classList.remove('pop'), { once: true });
+    });
+  });
 
   // ===== Restart =====
   restartBtn.addEventListener('click', () => {
