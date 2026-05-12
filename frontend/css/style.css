@@ -547,6 +547,94 @@ h1 {
   font-weight: 400;
 }
 
+/* ===== Lotto ===== */
+.lotto-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.lotto-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.lotto-balls {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  min-height: 52px;
+  align-items: center;
+}
+
+.lotto-ball {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  background: linear-gradient(135deg, #5a3acc, #8e5aff);
+  box-shadow: 0 2px 10px rgba(138, 90, 255, 0.45);
+  color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: ballPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.lotto-ball.lucky {
+  background: linear-gradient(135deg, #c47a00, #f0c060);
+  box-shadow: 0 2px 14px rgba(240, 192, 96, 0.65);
+  color: #1a0800;
+}
+
+@keyframes ballPop {
+  from { transform: scale(0.4); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.btn-lotto {
+  background: linear-gradient(135deg, #b85c00, #f0c060);
+  color: #1a0800;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 14px 24px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.btn-lotto:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.btn-lotto:active {
+  transform: translateY(0);
+}
+
+.lotto-link {
+  display: block;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--accent-gold);
+  text-decoration: none;
+  opacity: 0.75;
+  transition: opacity 0.2s;
+  letter-spacing: 0.02em;
+}
+
+.lotto-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
 /* ===== Camera Modal ===== */
 .modal {
   position: fixed;

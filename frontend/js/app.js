@@ -3,6 +3,7 @@
   let currentFile = null;
   let currentDataURL = null;
   let mediaStream = null;
+  let currentLuckyNumber = 7;
 
   // ===== DOM References =====
   const views = {
@@ -32,6 +33,8 @@
   const linesContainer = document.getElementById('linesContainer');
   const fortuneText = document.getElementById('fortuneText');
   const luckyItemsEl = document.getElementById('luckyItems');
+  const lottoBtn = document.getElementById('lottoBtn');
+  const lottoBalls = document.getElementById('lottoBalls');
 
   // ===== Stars Canvas =====
   function initStars() {
@@ -500,6 +503,9 @@
     }
 
     const { color = '', number = '', direction = '' } = data.luckyItems || {};
+    const luckyNum = parseInt(number, 10);
+    if (luckyNum >= 1 && luckyNum <= 45) currentLuckyNumber = luckyNum;
+    lottoBalls.innerHTML = '';
     luckyItemsEl.innerHTML = `
       <div class="lucky-item">
         <span class="lucky-label">색상</span>
@@ -580,6 +586,32 @@
       btn.classList.add('pop');
       btn.addEventListener('animationend', () => btn.classList.remove('pop'), { once: true });
     });
+  });
+
+  // ===== Lotto =====
+  function generateLottoNumbers(luckyNum) {
+    const nums = new Set([luckyNum]);
+    while (nums.size < 6) {
+      nums.add(Math.floor(Math.random() * 45) + 1);
+    }
+    return [...nums].sort((a, b) => a - b);
+  }
+
+  function renderLottoBalls(numbers, luckyNum) {
+    lottoBalls.innerHTML = '';
+    numbers.forEach((n, i) => {
+      const ball = document.createElement('span');
+      ball.className = 'lotto-ball' + (n === luckyNum ? ' lucky' : '');
+      ball.textContent = n;
+      ball.style.animationDelay = `${i * 60}ms`;
+      lottoBalls.appendChild(ball);
+    });
+  }
+
+  lottoBtn.addEventListener('click', () => {
+    const numbers = generateLottoNumbers(currentLuckyNumber);
+    renderLottoBalls(numbers, currentLuckyNumber);
+    window.open('https://ailottoo.pages.dev', '_blank', 'noopener,noreferrer');
   });
 
   // ===== Restart =====
