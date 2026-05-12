@@ -611,7 +611,6 @@
   lottoBtn.addEventListener('click', () => {
     const numbers = generateLottoNumbers(currentLuckyNumber);
     renderLottoBalls(numbers, currentLuckyNumber);
-    window.open('https://ailottoo.pages.dev', '_blank', 'noopener,noreferrer');
   });
 
   // ===== Restart =====
