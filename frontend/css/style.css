@@ -619,20 +619,29 @@ h1 {
   transform: translateY(0);
 }
 
-.lotto-link {
+.btn-tonggye {
   display: block;
   text-align: center;
-  font-size: 0.82rem;
-  color: var(--accent-gold);
   text-decoration: none;
-  opacity: 0.75;
-  transition: opacity 0.2s;
-  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #1a4a8a, #3a7bd5);
+  color: #e8f0ff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 14px 24px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  box-shadow: 0 2px 12px rgba(58, 123, 213, 0.4);
 }
 
-.lotto-link:hover {
-  opacity: 1;
-  text-decoration: underline;
+.btn-tonggye:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.btn-tonggye:active {
+  transform: translateY(0);
 }
 
 /* ===== Camera Modal ===== */
