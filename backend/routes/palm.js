@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 
 const router = express.Router();
 
@@ -74,22 +74,25 @@ router.post('/', upload.single('palmImage'), async (req, res) => {
     return res.status(400).json({ success: false, error: '이미지를 업로드해 주세요.' });
   }
 
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash',
-    generationConfig: { responseMimeType: 'application/json' },
-  });
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
   try {
     const base64 = req.file.buffer.toString('base64');
     const mimeType = req.file.mimetype;
 
-    const result = await model.generateContent([
-      { inlineData: { data: base64, mimeType } },
-      PALM_READING_PROMPT,
-    ]);
+    const result = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [{
+        role: 'user',
+        parts: [
+          { inlineData: { data: base64, mimeType } },
+          { text: PALM_READING_PROMPT },
+        ],
+      }],
+      config: { responseMimeType: 'application/json' },
+    });
 
-    const content = JSON.parse(result.response.text());
+    const content = JSON.parse(result.text);
 
     if (content.error) {
       return res.status(400).json({ success: false, error: content.error });

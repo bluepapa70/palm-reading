@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 
 const PALM_READING_PROMPT = `당신은 수십 년의 경험을 가진 전문 손금 전문가입니다.
 제공된 손바닥 이미지를 보고 한국 전통 손금 해석법에 따라 상세하게 분석해 주세요.
@@ -85,19 +85,22 @@ export async function onRequestPost(context) {
   }
   const base64 = btoa(binary);
 
-  const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash',
-    generationConfig: { responseMimeType: 'application/json' },
-  });
+  const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
 
   try {
-    const result = await model.generateContent([
-      { inlineData: { data: base64, mimeType } },
-      PALM_READING_PROMPT,
-    ]);
+    const result = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [{
+        role: 'user',
+        parts: [
+          { inlineData: { data: base64, mimeType } },
+          { text: PALM_READING_PROMPT },
+        ],
+      }],
+      config: { responseMimeType: 'application/json' },
+    });
 
-    const content = JSON.parse(result.response.text());
+    const content = JSON.parse(result.text);
 
     if (content.error) {
       return Response.json({ success: false, error: content.error }, { status: 400 });
