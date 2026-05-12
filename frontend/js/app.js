@@ -365,7 +365,7 @@
     );
 
     const H =
-      P + 88 + 52 + 40 + 28 +              // header: emoji, title, tagline, sep
+      P + 108 + 52 + 40 + 28 +             // header: emoji, title, tagline, sep
       overallLines.length * 38 + 8 + 28 +  // overall + sep
       lineBlockH + 4 + 28 +                // lines + sep
       42 + fortuneLines.length * 36 + 8 + 28 + // fortune + sep
@@ -413,11 +413,11 @@
     };
 
     // Header
-    ctx.font = '68px serif';
+    ctx.font = '72px serif';
     ctx.textAlign = 'center';
     ctx.fillStyle = '#fff';
-    ctx.fillText('🔮', W / 2, y + 68);
-    y += 88;
+    ctx.fillText('🔮', W / 2, y + 72);
+    y += 108;
 
     ctx.font = 'bold 46px "Noto Serif KR", serif';
     ctx.fillStyle = '#e8d5ff';
