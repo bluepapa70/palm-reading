@@ -118,8 +118,9 @@ export async function onRequestPost(context) {
         );
       }
       if (status === 400) {
+        const msg = errBody?.error?.message || JSON.stringify(errBody);
         return Response.json(
-          { success: false, error: 'AI 서비스 요청이 잘못되었습니다. 관리자에게 문의해 주세요.' },
+          { success: false, error: `[400] ${msg}` },
           { status: 503 }
         );
       }
