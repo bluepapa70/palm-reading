@@ -90,20 +90,28 @@
   }
 
   // ===== File Handling =====
-  const SUPPORTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
-
   function handleFile(file) {
     if (!file) return;
-    if (!SUPPORTED_TYPES.includes(file.type)) {
-      alert('지원하지 않는 파일 형식입니다.\nJPEG, PNG, WebP, HEIC 형식의 사진을 사용해 주세요.');
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일을 선택해 주세요.');
       return;
     }
-    currentFile = file;
     const reader = new FileReader();
     reader.onload = (e) => {
-      currentDataURL = e.target.result;
-      previewImage.src = currentDataURL;
-      showView('preview');
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        canvas.toBlob((blob) => {
+          currentFile = blob;
+          currentDataURL = canvas.toDataURL('image/png');
+          previewImage.src = currentDataURL;
+          showView('preview');
+        }, 'image/png');
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   }

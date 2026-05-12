@@ -70,12 +70,8 @@ export async function onRequestPost(context) {
   }
 
   const mimeType = file.type;
-  const supportedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
-  if (!supportedTypes.includes(mimeType)) {
-    return Response.json(
-      { success: false, error: '지원하지 않는 파일 형식입니다. JPEG, PNG, WebP, HEIC 형식을 사용해 주세요.' },
-      { status: 400 }
-    );
+  if (!mimeType.startsWith('image/')) {
+    return Response.json({ success: false, error: '이미지 파일만 업로드 가능합니다.' }, { status: 400 });
   }
 
   const arrayBuffer = await file.arrayBuffer();
