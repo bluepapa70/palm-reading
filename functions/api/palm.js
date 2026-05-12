@@ -1,5 +1,3 @@
-import { GoogleGenAI } from '@google/genai';
-
 const PALM_READING_PROMPT = `당신은 수십 년의 경험을 가진 전문 손금 전문가입니다.
 제공된 손바닥 이미지를 보고 한국 전통 손금 해석법에 따라 상세하게 분석해 주세요.
 
@@ -85,22 +83,57 @@ export async function onRequestPost(context) {
   }
   const base64 = btoa(binary);
 
-  const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
+  const apiKey = env.GEMINI_API_KEY;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
   try {
-    const result = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: [{
-        role: 'user',
-        parts: [
-          { inlineData: { data: base64, mimeType } },
-          { text: PALM_READING_PROMPT },
-        ],
-      }],
-      config: { responseMimeType: 'application/json' },
+    const geminiRes = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          role: 'user',
+          parts: [
+            { inlineData: { data: base64, mimeType } },
+            { text: PALM_READING_PROMPT },
+          ],
+        }],
+        generationConfig: { responseMimeType: 'application/json' },
+      }),
     });
 
-    const content = JSON.parse(result.text);
+    if (!geminiRes.ok) {
+      const errBody = await geminiRes.json().catch(() => ({}));
+      const status = geminiRes.status;
+      if (status === 429) {
+        return Response.json(
+          { success: false, error: 'AI 분석 서비스 이용 한도에 도달했습니다. 잠시 후 다시 시도해 주세요.' },
+          { status: 503 }
+        );
+      }
+      if (status === 403 || status === 401) {
+        return Response.json(
+          { success: false, error: 'AI 서비스 인증에 실패했습니다. 관리자에게 문의해 주세요.' },
+          { status: 503 }
+        );
+      }
+      console.error('Gemini API error:', status, errBody);
+      return Response.json(
+        { success: false, error: '분석 중 오류가 발생했습니다. 다시 시도해 주세요.' },
+        { status: 500 }
+      );
+    }
+
+    const geminiData = await geminiRes.json();
+    const text = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) {
+      return Response.json(
+        { success: false, error: '분석 결과를 처리하는 중 오류가 발생했습니다. 다시 시도해 주세요.' },
+        { status: 500 }
+      );
+    }
+
+    const content = JSON.parse(text);
 
     if (content.error) {
       return Response.json({ success: false, error: content.error }, { status: 400 });
@@ -116,18 +149,6 @@ export async function onRequestPost(context) {
     return Response.json({ success: true, data: content });
   } catch (err) {
     console.error('Palm analysis error:', err);
-    if (err?.status === 429) {
-      return Response.json(
-        { success: false, error: 'AI 분석 서비스 이용 한도에 도달했습니다. 잠시 후 다시 시도해 주세요.' },
-        { status: 503 }
-      );
-    }
-    if (err?.status === 403 || err?.status === 401) {
-      return Response.json(
-        { success: false, error: 'AI 서비스 인증에 실패했습니다. 관리자에게 문의해 주세요.' },
-        { status: 503 }
-      );
-    }
     return Response.json(
       { success: false, error: '분석 중 오류가 발생했습니다. 다시 시도해 주세요.' },
       { status: 500 }
