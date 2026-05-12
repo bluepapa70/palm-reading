@@ -70,8 +70,12 @@ export async function onRequestPost(context) {
   }
 
   const mimeType = file.type;
-  if (!mimeType.startsWith('image/')) {
-    return Response.json({ success: false, error: '이미지 파일만 업로드 가능합니다.' }, { status: 400 });
+  const supportedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+  if (!supportedTypes.includes(mimeType)) {
+    return Response.json(
+      { success: false, error: '지원하지 않는 파일 형식입니다. JPEG, PNG, WebP, HEIC 형식을 사용해 주세요.' },
+      { status: 400 }
+    );
   }
 
   const arrayBuffer = await file.arrayBuffer();
@@ -118,9 +122,8 @@ export async function onRequestPost(context) {
         );
       }
       if (status === 400) {
-        const msg = errBody?.error?.message || JSON.stringify(errBody);
         return Response.json(
-          { success: false, error: `[400] ${msg}` },
+          { success: false, error: 'AI 서비스 요청이 잘못되었습니다. 다시 시도해 주세요.' },
           { status: 503 }
         );
       }

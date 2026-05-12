@@ -90,10 +90,12 @@
   }
 
   // ===== File Handling =====
+  const SUPPORTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+
   function handleFile(file) {
     if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      alert('이미지 파일을 선택해 주세요.');
+    if (!SUPPORTED_TYPES.includes(file.type)) {
+      alert('지원하지 않는 파일 형식입니다.\nJPEG, PNG, WebP, HEIC 형식의 사진을 사용해 주세요.');
       return;
     }
     currentFile = file;
