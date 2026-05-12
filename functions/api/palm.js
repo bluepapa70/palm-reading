@@ -84,6 +84,12 @@ export async function onRequestPost(context) {
   const base64 = btoa(binary);
 
   const apiKey = env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return Response.json(
+      { success: false, error: 'AI 서비스 인증에 실패했습니다. 관리자에게 문의해 주세요.' },
+      { status: 503 }
+    );
+  }
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
   try {
@@ -111,6 +117,12 @@ export async function onRequestPost(context) {
           { status: 503 }
         );
       }
+      if (status === 400) {
+        return Response.json(
+          { success: false, error: 'AI 서비스 요청이 잘못되었습니다. 관리자에게 문의해 주세요.' },
+          { status: 503 }
+        );
+      }
       if (status === 403 || status === 401) {
         return Response.json(
           { success: false, error: 'AI 서비스 인증에 실패했습니다. 관리자에게 문의해 주세요.' },
@@ -125,7 +137,8 @@ export async function onRequestPost(context) {
     }
 
     const geminiData = await geminiRes.json();
-    const text = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text;
+    const parts = geminiData?.candidates?.[0]?.content?.parts || [];
+    const text = parts.find(p => !p.thought)?.text;
     if (!text) {
       return Response.json(
         { success: false, error: '분석 결과를 처리하는 중 오류가 발생했습니다. 다시 시도해 주세요.' },
