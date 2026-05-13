@@ -625,7 +625,6 @@ h1 {
   margin-bottom: 16px;
 }
 
-.btn-save,
 .btn-share {
   flex: 1;
   font-size: 0.95rem;
@@ -641,25 +640,17 @@ h1 {
   gap: 6px;
 }
 
-.btn-save {
-  background: linear-gradient(135deg, #2a1a4e, #4a2a7e);
-  color: #e8d5ff;
-  border: 1px solid rgba(176, 106, 255, 0.4);
-}
-
 .btn-share {
   background: linear-gradient(135deg, #1a3a1a, #2a6a2a);
   color: #d5ffd5;
   border: 1px solid rgba(106, 220, 106, 0.4);
 }
 
-.btn-save:hover:not(:disabled),
 .btn-share:hover:not(:disabled) {
   opacity: 0.85;
   transform: translateY(-1px);
 }
 
-.btn-save:disabled,
 .btn-share:disabled {
   opacity: 0.5;
   cursor: not-allowed;

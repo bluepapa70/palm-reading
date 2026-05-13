@@ -36,7 +36,6 @@
   const luckyItemsEl = document.getElementById('luckyItems');
   const lottoBtn = document.getElementById('lottoBtn');
   const lottoBalls = document.getElementById('lottoBalls');
-  const saveBtn = document.getElementById('saveBtn');
   const shareBtn = document.getElementById('shareBtn');
 
   // ===== Stars Canvas =====
@@ -529,29 +528,6 @@
 
     return canvas;
   }
-
-  saveBtn.addEventListener('click', async () => {
-    if (!lastResultData || saveBtn.disabled) return;
-    saveBtn.disabled = true;
-    const orig = saveBtn.innerHTML;
-    saveBtn.innerHTML = '<span class="btn-icon">⏳</span> 생성 중...';
-    try {
-      const canvas = await buildShareCanvas(lastResultData);
-      canvas.toBlob((blob) => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = '운명의손금.png';
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 5000);
-      }, 'image/png');
-    } catch {
-      alert('이미지 저장 중 오류가 발생했습니다.');
-    } finally {
-      saveBtn.disabled = false;
-      saveBtn.innerHTML = orig;
-    }
-  });
 
   shareBtn.addEventListener('click', async () => {
     if (!lastResultData || shareBtn.disabled) return;
