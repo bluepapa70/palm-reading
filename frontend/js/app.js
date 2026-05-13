@@ -17,7 +17,6 @@
   const fileInput = document.getElementById('fileInput');
   const dropZone = document.getElementById('dropZone');
   const uploadBtn = document.getElementById('uploadBtn');
-  const cameraBtn = document.getElementById('cameraBtn');
   const previewImage = document.getElementById('previewImage');
   const analyzeBtn = document.getElementById('analyzeBtn');
   const retakeBtn = document.getElementById('retakeBtn');
@@ -149,22 +148,6 @@
   });
 
   // ===== Camera =====
-  cameraBtn.addEventListener('click', async () => {
-    try {
-      mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 960 } },
-      });
-    } catch {
-      try {
-        mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
-      } catch {
-        alert('카메라에 접근할 수 없습니다. 브라우저 권한을 확인해 주세요.');
-        return;
-      }
-    }
-    videoFeed.srcObject = mediaStream;
-    cameraModal.classList.remove('hidden');
-  });
 
   captureBtn.addEventListener('click', () => {
     captureCanvas.width = videoFeed.videoWidth;
