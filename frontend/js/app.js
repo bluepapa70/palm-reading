@@ -360,12 +360,12 @@
     }));
 
     const lineBlockH = lineValues.reduce(
-      (sum, line) => sum + 30 + 20 + line.interpLines.length * 28 + 14,
+      (sum, line) => sum + 30 + 30 + line.interpLines.length * 28 + 14,
       0
     );
 
     const H =
-      P + 108 + 52 + 40 + 28 +             // header: emoji, title, tagline, sep
+      P + 130 + 52 + 40 + 28 +             // header: emoji, title, tagline, sep
       overallLines.length * 38 + 8 + 28 +  // overall + sep
       lineBlockH + 4 + 28 +                // lines + sep
       42 + fortuneLines.length * 36 + 8 + 28 + // fortune + sep
@@ -416,8 +416,8 @@
     ctx.font = '72px serif';
     ctx.textAlign = 'center';
     ctx.fillStyle = '#fff';
-    ctx.fillText('🔮', W / 2, y + 72);
-    y += 108;
+    ctx.fillText('🔮', W / 2, y + 74);
+    y += 130;
 
     ctx.font = 'bold 46px "Noto Serif KR", serif';
     ctx.fillStyle = '#e8d5ff';
@@ -474,7 +474,7 @@
         drawRoundRect(ctx, bx, y, sw, bh, 5);
         ctx.fill();
       }
-      y += 18;
+      y += 30;
 
       ctx.font = INTERP_FONT;
       ctx.fillStyle = 'rgba(200,180,240,0.78)';
