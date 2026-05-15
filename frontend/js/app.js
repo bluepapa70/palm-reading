@@ -567,7 +567,7 @@
       const file = new File([blob], '운명의손금.png', { type: 'image/png' });
 
       const shareText = lastLottoNumbers
-        ? '나의 손금을 AI로 분석해봤어요!\n👉 https://palm-reading.pages.dev\n\n더 많은 번호가 필요하다면\n🎰 https://ailottoo.pages.dev/'
+        ? '나의 손금을 AI로 분석해봤어요!\n👉 https://palm-reading.pages.dev\n\n통계왕 AI Lotto\n🎰 https://ailottoo.pages.dev/'
         : '나의 손금을 AI로 분석해봤어요!\n👉 https://palm-reading.pages.dev';
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
