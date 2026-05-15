@@ -2,6 +2,10 @@
   "name": "운명의 손금",
   "short_name": "손금",
   "description": "당신의 손 안에 숨겨진 운명을 읽어드립니다.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#08000f",
+  "theme_color": "#b06aff",
   "icons": [
     {
       "src": "/images/android-chrome-192x192.png",
@@ -12,9 +16,12 @@
       "src": "/images/android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "/images/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
-  ],
-  "theme_color": "#1a0a2e",
-  "background_color": "#1a0a2e",
-  "display": "standalone"
+  ]
 }

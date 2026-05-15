@@ -1,81 +1,71 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#1a0a2e"/>
-      <stop offset="100%" stop-color="#0d0618"/>
+    <radialGradient id="bgGrad" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#2a0a50"/>
+      <stop offset="100%" stop-color="#08000f"/>
     </radialGradient>
-    <radialGradient id="palmGlow" cx="50%" cy="60%" r="45%">
-      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.4"/>
-      <stop offset="100%" stop-color="#c084fc" stop-opacity="0"/>
+    <radialGradient id="handGlow" cx="50%" cy="65%" r="50%">
+      <stop offset="0%" stop-color="#b06aff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#b06aff" stop-opacity="0"/>
     </radialGradient>
     <filter id="glow">
-      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feGaussianBlur stdDeviation="5" result="blur"/>
       <feMerge>
-        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
     <filter id="softGlow">
-      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
       <feMerge>
-        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
   </defs>
 
-  <!-- Background circle -->
+  <!-- Background -->
   <circle cx="256" cy="256" r="256" fill="url(#bgGrad)"/>
-  <circle cx="256" cy="256" r="240" fill="none" stroke="#7c3aed" stroke-width="3" opacity="0.5"/>
-  <circle cx="256" cy="256" r="220" fill="none" stroke="#7c3aed" stroke-width="1" opacity="0.3"/>
+  <circle cx="256" cy="256" r="244" fill="none" stroke="#7c3aed" stroke-width="3" opacity="0.6"/>
+  <circle cx="256" cy="256" r="226" fill="none" stroke="#7c3aed" stroke-width="1.5" opacity="0.25"/>
 
-  <!-- Glow behind palm -->
-  <ellipse cx="256" cy="310" rx="140" ry="120" fill="url(#palmGlow)"/>
+  <!-- Glow behind hand -->
+  <ellipse cx="255" cy="318" rx="148" ry="128" fill="url(#handGlow)"/>
 
-  <!-- Palm / Hand shape -->
-  <!-- Thumb -->
-  <path d="M170 330 Q150 300 155 265 Q160 240 175 245 Q190 248 188 278 L185 330Z"
-        fill="#e2c4ff" opacity="0.9"/>
-  <!-- Index finger -->
-  <path d="M195 330 L192 210 Q193 185 207 185 Q221 185 222 210 L220 330Z"
-        fill="#e2c4ff" opacity="0.9"/>
-  <!-- Middle finger -->
-  <path d="M227 330 L225 195 Q226 168 241 168 Q256 168 257 195 L255 330Z"
-        fill="#e2c4ff" opacity="0.9"/>
-  <!-- Ring finger -->
-  <path d="M262 330 L260 205 Q261 180 275 180 Q289 180 290 205 L288 330Z"
-        fill="#e2c4ff" opacity="0.9"/>
-  <!-- Pinky finger -->
-  <path d="M295 330 L294 225 Q295 205 307 205 Q319 205 320 225 L318 330Z"
-        fill="#e2c4ff" opacity="0.9"/>
-  <!-- Palm base -->
-  <path d="M170 330 Q160 360 168 390 Q175 415 210 425 Q256 432 302 425 Q335 415 342 390 Q350 360 340 330Z"
-        fill="#e2c4ff" opacity="0.9"/>
+  <!-- Hand -->
+  <path d="M166 328 Q145 296 151 258 Q157 232 176 237 Q195 242 193 275 L189 328Z"
+        fill="#d4aaff" opacity="0.9"/>
+  <path d="M200 328 L197 205 Q198 177 215 177 Q232 177 233 205 L231 328Z"
+        fill="#d4aaff" opacity="0.9"/>
+  <path d="M238 328 L236 188 Q237 159 255 159 Q273 159 274 188 L272 328Z"
+        fill="#d4aaff" opacity="0.9"/>
+  <path d="M278 328 L276 200 Q277 172 295 172 Q313 172 314 200 L312 328Z"
+        fill="#d4aaff" opacity="0.9"/>
+  <path d="M316 328 L315 220 Q316 200 331 200 Q346 200 347 220 L345 328Z"
+        fill="#d4aaff" opacity="0.9"/>
+  <path d="M166 328 Q155 363 163 396 Q171 423 215 433 Q256 441 297 433 Q340 423 348 396 Q357 363 345 328Z"
+        fill="#d4aaff" opacity="0.9"/>
 
   <!-- Palm lines with glow -->
-  <!-- Life line -->
-  <path d="M210 340 Q200 360 198 385 Q197 405 205 420"
-        fill="none" stroke="#a855f7" stroke-width="5" stroke-linecap="round" filter="url(#glow)" opacity="0.95"/>
-  <!-- Head line -->
-  <path d="M190 335 Q220 330 260 332 Q290 333 315 340"
-        fill="none" stroke="#818cf8" stroke-width="4" stroke-linecap="round" filter="url(#glow)" opacity="0.9"/>
-  <!-- Heart line -->
-  <path d="M192 320 Q230 312 265 316 Q295 319 318 326"
-        fill="none" stroke="#e879f9" stroke-width="4" stroke-linecap="round" filter="url(#glow)" opacity="0.9"/>
-  <!-- Fate line -->
-  <path d="M254 420 Q256 390 257 360 Q258 340 257 310"
-        fill="none" stroke="#c084fc" stroke-width="3.5" stroke-linecap="round" filter="url(#glow)" opacity="0.85"/>
+  <path d="M214 340 Q203 363 201 391 Q200 413 208 429"
+        fill="none" stroke="#b06aff" stroke-width="7" stroke-linecap="round" filter="url(#glow)" opacity="1"/>
+  <path d="M188 334 Q225 326 265 329 Q298 331 326 340"
+        fill="none" stroke="#818cf8" stroke-width="6" stroke-linecap="round" filter="url(#glow)" opacity="0.93"/>
+  <path d="M190 317 Q230 309 268 313 Q301 317 327 326"
+        fill="none" stroke="#e879f9" stroke-width="6" stroke-linecap="round" filter="url(#glow)" opacity="0.9"/>
+  <path d="M256 433 Q258 394 259 358 Q260 339 259 306"
+        fill="none" stroke="#c084fc" stroke-width="5" stroke-linecap="round" filter="url(#glow)" opacity="0.85"/>
 
   <!-- Sparkles -->
   <g filter="url(#softGlow)">
-    <polygon points="256,95 260,108 273,108 263,116 267,129 256,121 245,129 249,116 239,108 252,108"
-             fill="#fde68a" opacity="0.9"/>
-    <polygon points="130,155 132,162 139,162 134,166 136,173 130,169 124,173 126,166 121,162 128,162"
-             fill="#c084fc" opacity="0.8"/>
-    <polygon points="382,155 384,162 391,162 386,166 388,173 382,169 376,173 378,166 373,162 380,162"
-             fill="#818cf8" opacity="0.8"/>
-    <circle cx="140" cy="230" r="4" fill="#fde68a" opacity="0.7"/>
-    <circle cx="372" cy="230" r="4" fill="#fde68a" opacity="0.7"/>
-    <circle cx="256" cy="140" r="3" fill="#e879f9" opacity="0.6"/>
+    <polygon points="256,82 261,98 278,98 265,108 270,124 256,114 242,124 247,108 234,98 251,98"
+             fill="#fde68a" opacity="0.93"/>
+    <polygon points="122,146 125,156 135,156 128,162 131,172 122,166 113,172 116,162 109,156 119,156"
+             fill="#c084fc" opacity="0.83"/>
+    <polygon points="390,146 393,156 403,156 396,162 399,172 390,166 381,172 384,162 377,156 387,156"
+             fill="#818cf8" opacity="0.83"/>
+    <circle cx="132" cy="226" r="5" fill="#fde68a" opacity="0.68"/>
+    <circle cx="380" cy="226" r="5" fill="#fde68a" opacity="0.68"/>
+    <circle cx="256" cy="128" r="4" fill="#e879f9" opacity="0.62"/>
   </g>
 </svg>
