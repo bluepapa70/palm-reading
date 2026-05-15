@@ -5,6 +5,7 @@
   let mediaStream = null;
   let currentLuckyNumber = 7;
   let lastResultData = null;
+  let lastLottoNumbers = null;
 
   // ===== DOM References =====
   const views = {
@@ -346,12 +347,15 @@
       0
     );
 
+    const lottoSectionH = lastLottoNumbers ? 28 + 44 + 56 + 14 : 0; // sep + title + balls + margin
+
     const H =
       P + 130 + 52 + 40 + 28 +             // header: emoji, title, tagline, sep
       overallLines.length * 38 + 8 + 28 +  // overall + sep
       lineBlockH + 4 + 28 +                // lines + sep
       42 + fortuneLines.length * 36 + 8 + 28 + // fortune + sep
       44 + 3 * 44 +                         // lucky items
+      lottoSectionH +
       P;
 
     const canvas = document.createElement('canvas');
@@ -509,6 +513,46 @@
       y += 44;
     }
 
+    // Lotto numbers (only if generated)
+    if (lastLottoNumbers) {
+      sep();
+
+      ctx.font = 'bold 28px "Noto Sans KR", sans-serif';
+      ctx.fillStyle = '#ffd700';
+      ctx.textAlign = 'left';
+      ctx.fillText('🎰 행운의 로또 번호', P, y);
+      y += 44;
+
+      const ballR = 28;
+      const ballGap = 18;
+      const totalW = lastLottoNumbers.length * (ballR * 2) + (lastLottoNumbers.length - 1) * ballGap;
+      let bx = (W - totalW) / 2 + ballR;
+
+      for (const n of lastLottoNumbers) {
+        const isLucky = n === currentLuckyNumber;
+        const g = ctx.createRadialGradient(bx - 8, y + ballR - 8, 3, bx, y + ballR, ballR);
+        if (isLucky) {
+          g.addColorStop(0, '#ffee66');
+          g.addColorStop(1, '#ff8c00');
+        } else {
+          g.addColorStop(0, '#cc88ff');
+          g.addColorStop(1, '#6020aa');
+        }
+        ctx.beginPath();
+        ctx.arc(bx, y + ballR, ballR, 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.fill();
+
+        ctx.font = `bold ${n >= 10 ? '21' : '23'}px "Noto Sans KR", sans-serif`;
+        ctx.fillStyle = isLucky ? '#1a0a2e' : '#fff';
+        ctx.textAlign = 'center';
+        ctx.fillText(String(n), bx, y + ballR + 8);
+
+        bx += ballR * 2 + ballGap;
+      }
+      y += ballR * 2 + 14;
+    }
+
     return canvas;
   }
 
@@ -522,14 +566,20 @@
       const blob = await new Promise((res) => canvas.toBlob(res, 'image/png'));
       const file = new File([blob], '운명의손금.png', { type: 'image/png' });
 
+      const shareText = lastLottoNumbers
+        ? '나의 손금을 AI로 분석해봤어요!\n👉 https://palm-reading.pages.dev\n\n더 많은 번호가 필요하다면\n🎰 https://ailottoo.pages.dev/'
+        : '나의 손금을 AI로 분석해봤어요!\n👉 https://palm-reading.pages.dev';
+
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
           title: '손금으로 알아보는 나의 운명',
+          text: shareText,
         });
       } else if (navigator.share) {
         await navigator.share({
           title: '손금으로 알아보는 나의 운명',
+          text: shareText,
           url: 'https://palm-reading.pages.dev',
         });
       } else {
@@ -570,6 +620,7 @@
 
   lottoBtn.addEventListener('click', () => {
     const numbers = generateLottoNumbers(currentLuckyNumber);
+    lastLottoNumbers = numbers;
     renderLottoBalls(numbers, currentLuckyNumber);
   });
 
@@ -632,6 +683,7 @@
     fortuneText.textContent = '';
     luckyItemsEl.innerHTML = '';
     lottoBalls.innerHTML = '';
+    lastLottoNumbers = null;
     analyzeBtn.disabled = false;
     showView('upload');
   });
