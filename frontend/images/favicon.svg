@@ -1,71 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <defs>
-    <radialGradient id="bgGrad" cx="50%" cy="40%" r="55%">
-      <stop offset="0%" stop-color="#2a0a50"/>
-      <stop offset="100%" stop-color="#08000f"/>
+    <radialGradient id="ball" cx="38%" cy="32%" r="65%">
+      <stop offset="0%" stop-color="#f0d0ff"/>
+      <stop offset="30%" stop-color="#c580ff"/>
+      <stop offset="65%" stop-color="#8030c0"/>
+      <stop offset="100%" stop-color="#3a0060"/>
     </radialGradient>
-    <radialGradient id="handGlow" cx="50%" cy="65%" r="50%">
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
       <stop offset="0%" stop-color="#b06aff" stop-opacity="0.5"/>
       <stop offset="100%" stop-color="#b06aff" stop-opacity="0"/>
     </radialGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="5" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-    <filter id="softGlow">
-      <feGaussianBlur stdDeviation="2.5" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
   </defs>
-
-  <!-- Background -->
-  <circle cx="256" cy="256" r="256" fill="url(#bgGrad)"/>
-  <circle cx="256" cy="256" r="244" fill="none" stroke="#7c3aed" stroke-width="3" opacity="0.6"/>
-  <circle cx="256" cy="256" r="226" fill="none" stroke="#7c3aed" stroke-width="1.5" opacity="0.25"/>
-
-  <!-- Glow behind hand -->
-  <ellipse cx="255" cy="318" rx="148" ry="128" fill="url(#handGlow)"/>
-
-  <!-- Hand -->
-  <path d="M166 328 Q145 296 151 258 Q157 232 176 237 Q195 242 193 275 L189 328Z"
-        fill="#d4aaff" opacity="0.9"/>
-  <path d="M200 328 L197 205 Q198 177 215 177 Q232 177 233 205 L231 328Z"
-        fill="#d4aaff" opacity="0.9"/>
-  <path d="M238 328 L236 188 Q237 159 255 159 Q273 159 274 188 L272 328Z"
-        fill="#d4aaff" opacity="0.9"/>
-  <path d="M278 328 L276 200 Q277 172 295 172 Q313 172 314 200 L312 328Z"
-        fill="#d4aaff" opacity="0.9"/>
-  <path d="M316 328 L315 220 Q316 200 331 200 Q346 200 347 220 L345 328Z"
-        fill="#d4aaff" opacity="0.9"/>
-  <path d="M166 328 Q155 363 163 396 Q171 423 215 433 Q256 441 297 433 Q340 423 348 396 Q357 363 345 328Z"
-        fill="#d4aaff" opacity="0.9"/>
-
-  <!-- Palm lines with glow -->
-  <path d="M214 340 Q203 363 201 391 Q200 413 208 429"
-        fill="none" stroke="#b06aff" stroke-width="7" stroke-linecap="round" filter="url(#glow)" opacity="1"/>
-  <path d="M188 334 Q225 326 265 329 Q298 331 326 340"
-        fill="none" stroke="#818cf8" stroke-width="6" stroke-linecap="round" filter="url(#glow)" opacity="0.93"/>
-  <path d="M190 317 Q230 309 268 313 Q301 317 327 326"
-        fill="none" stroke="#e879f9" stroke-width="6" stroke-linecap="round" filter="url(#glow)" opacity="0.9"/>
-  <path d="M256 433 Q258 394 259 358 Q260 339 259 306"
-        fill="none" stroke="#c084fc" stroke-width="5" stroke-linecap="round" filter="url(#glow)" opacity="0.85"/>
-
-  <!-- Sparkles -->
-  <g filter="url(#softGlow)">
-    <polygon points="256,82 261,98 278,98 265,108 270,124 256,114 242,124 247,108 234,98 251,98"
-             fill="#fde68a" opacity="0.93"/>
-    <polygon points="122,146 125,156 135,156 128,162 131,172 122,166 113,172 116,162 109,156 119,156"
-             fill="#c084fc" opacity="0.83"/>
-    <polygon points="390,146 393,156 403,156 396,162 399,172 390,166 381,172 384,162 377,156 387,156"
-             fill="#818cf8" opacity="0.83"/>
-    <circle cx="132" cy="226" r="5" fill="#fde68a" opacity="0.68"/>
-    <circle cx="380" cy="226" r="5" fill="#fde68a" opacity="0.68"/>
-    <circle cx="256" cy="128" r="4" fill="#e879f9" opacity="0.62"/>
-  </g>
+  <!-- Dark background -->
+  <rect width="32" height="32" rx="7" fill="#08000f"/>
+  <!-- Outer glow -->
+  <circle cx="16" cy="17" r="12" fill="url(#glow)"/>
+  <!-- Crystal ball -->
+  <circle cx="16" cy="17" r="10" fill="url(#ball)"/>
+  <!-- Glass shine highlight -->
+  <ellipse cx="13" cy="13" rx="2.8" ry="1.6" fill="white" fill-opacity="0.38" transform="rotate(-25,13,13)"/>
+  <!-- Star sparkles -->
+  <circle cx="23" cy="7" r="1.1" fill="white" fill-opacity="0.75"/>
+  <circle cx="26" cy="11" r="0.6" fill="white" fill-opacity="0.5"/>
+  <circle cx="6"  cy="9"  r="0.7" fill="white" fill-opacity="0.45"/>
 </svg>
